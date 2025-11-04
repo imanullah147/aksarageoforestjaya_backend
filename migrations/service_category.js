@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('galery', {
+    return queryInterface.createTable('service_categories', {
       id: {
         type: Sequelize.INTEGER,
         field: 'id',
@@ -9,16 +9,20 @@ module.exports = {
         primaryKey: true,
         allowNull: false
       },
-      url: {
+      title: {
         type: Sequelize.STRING,
-        field: 'url',
+        field: 'title',
         allowNull: false
       },
-      status: {
-        type: Sequelize.INTEGER,
-        field: 'status',
-        allowNull: false,
-        defaultValue: 1 // misal 1 = aktif, 0 = nonaktif
+      description: {
+        type: Sequelize.TEXT,
+        field: 'description',
+        allowNull: true
+      },
+      icon: {
+        type: Sequelize.STRING,
+        field: 'icon',
+        allowNull: true
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -36,6 +40,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('galery');
+    return queryInterface.dropTable('service_categories');
   }
 };
