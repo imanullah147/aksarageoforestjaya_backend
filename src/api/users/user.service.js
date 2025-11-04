@@ -16,7 +16,6 @@ class UserService {
       email: data.email,
       nama: data.nama,
       password: hashedPassword,
-      role: data.role,
       status: 1,
     });
 
@@ -35,7 +34,6 @@ class UserService {
     const updateData = {
       email: data.email,
       nama: data.nama,
-      role: data.role,
     };
 
     if (data.password && data.password.trim() !== "") {

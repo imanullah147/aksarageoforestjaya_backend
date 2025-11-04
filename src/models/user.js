@@ -25,10 +25,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      role: {
-        type: DataTypes.INTEGER,
-        allowNull: true, // biarin tetap ada kolom role, tapi tanpa relasi ke model lain
-      },
       status: {
         type: DataTypes.INTEGER,
         defaultValue: 1,

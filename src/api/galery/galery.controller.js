@@ -1,13 +1,18 @@
 const galeryService = require("./galery.service");
 const response = require("../../utils/response");
+const GaleryRequest = require("./galery.request");
 
 module.exports = {
   createGalery: async (req, res) => {
     try {
-      const result = await galeryService.createGalery(req.body.data);
+      const galeryData = GaleryRequest.parseCreate(req);
+      const result = await galeryService.createGalery(galeryData);
 
       if (!result.success)
-        return response.error(res, { code: result.code, message: result.message });
+        return response.error(res, {
+          code: result.code,
+          message: result.message,
+        });
 
       return response.success(res, {
         code: result.code,
@@ -25,10 +30,14 @@ module.exports = {
 
   editGalery: async (req, res) => {
     try {
-      const result = await galeryService.editGalery(req.params.id, req.body.data);
+      const galeryData = GaleryRequest.parseEdit(req);
+      const result = await galeryService.editGalery(galeryData.id, galeryData);
 
       if (!result.success)
-        return response.error(res, { code: result.code, message: result.message });
+        return response.error(res, {
+          code: result.code,
+          message: result.message,
+        });
 
       return response.success(res, { message: result.message });
     } catch (err) {
@@ -42,10 +51,14 @@ module.exports = {
 
   getGaleryById: async (req, res) => {
     try {
-      const result = await galeryService.getGaleryById(req.params.id);
+      const galeryId = GaleryRequest.parseGetById(req);
+      const result = await galeryService.getGaleryById(galeryId);
 
       if (!result.success)
-        return response.error(res, { code: result.code, message: result.message });
+        return response.error(res, {
+          code: result.code,
+          message: result.message,
+        });
 
       return response.success(res, { data: result.data });
     } catch (err) {
@@ -59,7 +72,8 @@ module.exports = {
 
   getAllGalery: async (req, res) => {
     try {
-      const result = await galeryService.getAllGalery(req.body);
+      const galeryQuery = GaleryRequest.parseList(req);
+      const result = await galeryService.getAllGalery(galeryQuery);
 
       return response.paginated(res, {
         data: result.data,
@@ -78,10 +92,14 @@ module.exports = {
 
   deleteGalery: async (req, res) => {
     try {
-      const result = await galeryService.deleteGalery(req.params.id);
+      const galeryId = GaleryRequest.parseDelete(req);
+      const result = await galeryService.deleteGalery(galeryId);
 
       if (!result.success)
-        return response.error(res, { code: result.code, message: result.message });
+        return response.error(res, {
+          code: result.code,
+          message: result.message,
+        });
 
       return response.success(res, { message: result.message });
     } catch (err) {
@@ -95,7 +113,8 @@ module.exports = {
 
   aktifkanGalery: async (req, res) => {
     try {
-      const result = await galeryService.aktifkanGalery(req.body.id);
+      const galeryIds = GaleryRequest.parseBulk(req);
+      const result = await galeryService.aktifkanGalery(galeryIds);
       return response.success(res, { message: result.message });
     } catch (err) {
       return response.error(res, {
@@ -108,7 +127,8 @@ module.exports = {
 
   nonAktifkanGalery: async (req, res) => {
     try {
-      const result = await galeryService.nonAktifkanGalery(req.body.id);
+      const galeryIds = GaleryRequest.parseBulk(req);
+      const result = await galeryService.nonAktifkanGalery(galeryIds);
       return response.success(res, { message: result.message });
     } catch (err) {
       return response.error(res, {

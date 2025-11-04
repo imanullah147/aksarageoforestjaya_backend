@@ -1,10 +1,12 @@
 const userService = require("./user.service");
 const response = require("../../utils/response");
+const UserRequest = require("./user.request");
 
 module.exports = {
   createUser: async (req, res) => {
     try {
-      const result = await userService.createUser(req.body.data);
+      const userData = UserRequest.parseCreate(req);
+      const result = await userService.createUser(userData);
 
       if (!result.success) {
         return response.error(res, { code: result.code, message: result.message });
@@ -22,7 +24,8 @@ module.exports = {
 
   editUser: async (req, res) => {
     try {
-      const result = await userService.editUser(req.body.data);
+      const userData = UserRequest.parseEdit(req);
+      const result = await userService.editUser(userData);
       if (!result.success) {
         return response.error(res, { code: result.code, message: result.message });
       }
@@ -35,7 +38,8 @@ module.exports = {
 
   getUserById: async (req, res) => {
     try {
-      const result = await userService.getUserById(req.params.id);
+      const userId = UserRequest.parseGetById(req);
+      const result = await userService.getUserById(userId);
       if (!result.success) {
         return response.error(res, { code: result.code, message: result.message });
       }
@@ -48,7 +52,8 @@ module.exports = {
 
   getUser: async (req, res) => {
     try {
-      const result = await userService.getUserList(req.body);
+      const userQuery = UserRequest.parseList(req);
+      const result = await userService.getUserList(userQuery);
       return response.paginated(res, {
         data: result.data,
         total: result.totalData,
@@ -62,7 +67,8 @@ module.exports = {
 
   deleteUser: async (req, res) => {
     try {
-      const result = await userService.deleteUser(req.params.id);
+      const userId = UserRequest.parseDelete(req);
+      const result = await userService.deleteUser(userId);
       if (!result.success) {
         return response.error(res, { code: result.code, message: result.message });
       }
@@ -75,7 +81,8 @@ module.exports = {
 
   aktifUserBanyak: async (req, res) => {
     try {
-      const result = await userService.aktifUserBanyak(req.body.id);
+      const userIds = UserRequest.parseBulk(req);
+      const result = await userService.aktifUserBanyak(userIds);
       return response.success(res, { message: result.message });
     } catch (err) {
       return response.error(res, { code: 500, message: "Gagal mengaktifkan user", error: err.message });
@@ -84,7 +91,8 @@ module.exports = {
 
   nonAktifUserBanyak: async (req, res) => {
     try {
-      const result = await userService.nonAktifUserBanyak(req.body.id);
+      const userIds = UserRequest.parseBulk(req);
+      const result = await userService.nonAktifUserBanyak(userIds);
       return response.success(res, { message: result.message });
     } catch (err) {
       return response.error(res, { code: 500, message: "Gagal menonaktifkan user", error: err.message });

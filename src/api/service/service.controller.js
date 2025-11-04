@@ -1,12 +1,17 @@
 const serviceService = require("./service.service");
 const response = require("../../utils/response");
+const ServiceRequest = require("./service.request");
 
 module.exports = {
   createService: async (req, res) => {
     try {
-      const result = await serviceService.createService(req.body.data);
+      const data = ServiceRequest.parseCreate(req);
+      const result = await serviceService.createService(data);
       if (!result.success)
-        return response.error(res, { code: result.code, message: result.message });
+        return response.error(res, {
+          code: result.code,
+          message: result.message,
+        });
 
       return response.success(res, {
         code: result.code,
@@ -24,9 +29,13 @@ module.exports = {
 
   updateService: async (req, res) => {
     try {
-      const result = await serviceService.updateService(req.params.id, req.body.data);
+      const data = ServiceRequest.parseUpdate(req);
+      const result = await serviceService.updateService(data.id, data);
       if (!result.success)
-        return response.error(res, { code: result.code, message: result.message });
+        return response.error(res, {
+          code: result.code,
+          message: result.message,
+        });
 
       return response.success(res, { message: result.message });
     } catch (err) {
@@ -40,9 +49,13 @@ module.exports = {
 
   getServiceById: async (req, res) => {
     try {
-      const result = await serviceService.getServiceById(req.params.id);
+      const serviceId = ServiceRequest.parseGetById(req);
+      const result = await serviceService.getServiceById(serviceId);
       if (!result.success)
-        return response.error(res, { code: result.code, message: result.message });
+        return response.error(res, {
+          code: result.code,
+          message: result.message,
+        });
 
       return response.success(res, { data: result.data });
     } catch (err) {
@@ -56,7 +69,8 @@ module.exports = {
 
   getAllServices: async (req, res) => {
     try {
-      const result = await serviceService.getAllServices(req.body);
+      const query = ServiceRequest.parseList(req);
+      const result = await serviceService.getAllServices(query);
       return response.paginated(res, {
         data: result.data,
         total: result.totalData,
@@ -74,9 +88,13 @@ module.exports = {
 
   deleteService: async (req, res) => {
     try {
-      const result = await serviceService.deleteService(req.params.id);
+      const serviceId = ServiceRequest.parseDelete(req);
+      const result = await serviceService.deleteService(serviceId);
       if (!result.success)
-        return response.error(res, { code: result.code, message: result.message });
+        return response.error(res, {
+          code: result.code,
+          message: result.message,
+        });
 
       return response.success(res, { message: result.message });
     } catch (err) {
@@ -90,7 +108,11 @@ module.exports = {
 
   activateMany: async (req, res) => {
     try {
-      const result = await serviceService.updateStatusMany(req.body.id, "active");
+      const ids = ServiceRequest.parseBulkStatus(req);
+      const result = await serviceService.updateStatusMany(
+        ids,
+        "active"
+      );
       return response.success(res, { message: result.message });
     } catch (err) {
       return response.error(res, {
@@ -103,7 +125,11 @@ module.exports = {
 
   deactivateMany: async (req, res) => {
     try {
-      const result = await serviceService.updateStatusMany(req.body.id, "inactive");
+      const ids = ServiceRequest.parseBulkStatus(req);
+      const result = await serviceService.updateStatusMany(
+        ids,
+        "inactive"
+      );
       return response.success(res, { message: result.message });
     } catch (err) {
       return response.error(res, {
