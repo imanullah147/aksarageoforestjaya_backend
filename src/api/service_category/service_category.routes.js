@@ -1,26 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const serviceCategoryController = require("./service_category.controller");
+const controller = require("./service_category.controller");
+const { checkToken } = require("../../middleware/token_validation");
 
-// 📦 CREATE
-router.post("/", serviceCategoryController.createServiceCategory);
-
-// 🔄 UPDATE
-router.put("/:id", serviceCategoryController.updateServiceCategory);
-
-// 🔍 GET BY ID
-router.get("/:id", serviceCategoryController.getServiceCategoryById);
-
-// 📋 GET ALL
-router.get("/", serviceCategoryController.getAllServiceCategories);
-
-// ❌ DELETE
-router.delete("/:id", serviceCategoryController.deleteServiceCategory);
-
-// ✅ BULK ACTIVATE
-router.put("/activate/many", serviceCategoryController.activateMany);
-
-// 🚫 BULK DEACTIVATE
-router.put("/deactivate/many", serviceCategoryController.deactivateMany);
+router.get("/", controller.getAllCategory);
+router.get("/:id", controller.getCategoryById);
+router.post("/", checkToken, controller.createCategory);
+router.patch("/:id", checkToken, controller.editCategory);
+router.delete("/:id", checkToken, controller.deleteCategory);
+router.post("/activate", checkToken, controller.activateMany);
+router.post("/deactivate", checkToken, controller.deactivateMany);
 
 module.exports = router;

@@ -1,119 +1,99 @@
-const { service_category } = require("../../models");
+const model = require("../../models");
 
-module.exports = {
-  createServiceCategory: async (data) => {
-    try {
-      const created = await service_category.create(data);
-      return {
-        success: true,
-        code: 201,
-        message: "Kategori service berhasil ditambahkan",
-        data: created,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        code: 500,
-        message: "Gagal menambahkan kategori service",
-        error: err.message,
-      };
-    }
-  },
+class ServiceCategoryService {
+  async createCategory(data) {
+    const category = await model.ServiceCategory.create(data);
+    return {
+      success: true,
+      code: 201,
+      message: "Kategori layanan berhasil ditambahkan",
+      data: category,
+    };
+  }
 
-  updateServiceCategory: async (id, data) => {
-    try {
-      const category = await service_category.findByPk(id);
-      if (!category)
-        return { success: false, code: 404, message: "Kategori service tidak ditemukan" };
+  async editCategory(id, data) {
+    const category = await model.ServiceCategory.findByPk(id);
+    if (!category)
+      return { success: false, code: 404, message: "Kategori tidak ditemukan" };
 
-      await category.update(data);
-      return { success: true, code: 200, message: "Kategori service berhasil diperbarui" };
-    } catch (err) {
-      return {
-        success: false,
-        code: 500,
-        message: "Gagal memperbarui kategori service",
-        error: err.message,
-      };
-    }
-  },
+    await model.ServiceCategory.update(data, { where: { id } });
+    return {
+      success: true,
+      code: 200,
+      message: "Kategori layanan berhasil diperbarui",
+    };
+  }
 
-  getServiceCategoryById: async (id) => {
-    try {
-      const category = await service_category.findByPk(id);
-      if (!category)
-        return { success: false, code: 404, message: "Kategori service tidak ditemukan" };
+  async getCategoryById(id) {
+    const category = await model.ServiceCategory.findByPk(id, {
+      include: [{ model: model.Service, as: "services" }],
+    });
 
-      return { success: true, code: 200, data: category };
-    } catch (err) {
-      return {
-        success: false,
-        code: 500,
-        message: "Gagal mengambil data kategori service",
-        error: err.message,
-      };
-    }
-  },
+    if (!category)
+      return { success: false, code: 404, message: "Kategori tidak ditemukan" };
 
-  getAllServiceCategories: async ({ page = 1, limit = 10 }) => {
-    try {
-      const offset = (page - 1) * limit;
-      const { rows, count } = await service_category.findAndCountAll({
-        offset,
-        limit,
-        order: [["createdAt", "DESC"]],
-      });
+    return { success: true, code: 200, data: category };
+  }
 
-      return {
-        success: true,
-        data: rows,
-        totalData: count,
-        page,
-        limit,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        code: 500,
-        message: "Gagal mengambil daftar kategori service",
-        error: err.message,
-      };
-    }
-  },
+  async getAllCategory({
+    cari = "",
+    page = 0,
+    size = 10,
+    sortField = "id",
+    sortOrder = "ASC",
+  }) {
+    const categories = await model.ServiceCategory.findAndCountAll({
+      where: {
+        title: { [model.Sequelize.Op.iLike]: `%${cari}%` },
+      },
+      offset: parseInt(page),
+      limit: parseInt(size),
+      order: [[sortField, sortOrder]],
+    });
 
-  deleteServiceCategory: async (id) => {
-    try {
-      const category = await service_category.findByPk(id);
-      if (!category)
-        return { success: false, code: 404, message: "Kategori service tidak ditemukan" };
+    return {
+      success: true,
+      code: 200,
+      totalData: categories.count,
+      limit: size,
+      page,
+      data: categories.rows,
+    };
+  }
 
-      await category.destroy();
-      return { success: true, code: 200, message: "Kategori service berhasil dihapus" };
-    } catch (err) {
+  async deleteCategory(id) {
+    const deleted = await model.ServiceCategory.destroy({ where: { id } });
+    if (!deleted)
+      return { success: false, code: 404, message: "Kategori tidak ditemukan" };
+
+    return { success: true, code: 200, message: "Kategori berhasil dihapus" };
+  }
+
+  async updateStatusMany(ids, newStatus) {
+    const [updatedCount] = await model.ServiceCategory.update(
+      { status: newStatus },
+      { where: { id: ids } }
+    );
+
+    if (!updatedCount) {
       return {
         success: false,
-        code: 500,
-        message: "Gagal menghapus kategori service",
-        error: err.message,
+        code: 404,
+        message: "Tidak ada kategori yang diperbarui",
       };
     }
-  },
 
-  updateStatusMany: async (ids, status) => {
-    try {
-      await service_category.update({ status }, { where: { id: ids } });
-      return {
-        success: true,
-        code: 200,
-        message: `Kategori service berhasil diperbarui menjadi ${status}`,
-      };
-    } catch (err) {
-      return {
-        success: false,
-        code: 500,
-        message: "Gagal memperbarui status kategori service",
-        error: err.message,
-      };
-    }
-  },
-};
+    const msg =
+      newStatus === "active"
+        ? "Beberapa kategori berhasil diaktifkan"
+        : "Beberapa kategori berhasil dinonaktifkan";
+
+    return {
+      success: true,
+      code: 200,
+      message: msg,
+    };
+  }
+}
+
+module.exports = new ServiceCategoryService();

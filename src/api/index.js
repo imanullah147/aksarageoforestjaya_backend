@@ -13,7 +13,7 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/galery", galeryRoutes);
 router.use("/services", serviceRoutes);
-router.use("/service-category", serviceCategoryRoutes);
+router.use("/services-category", serviceCategoryRoutes);
 
 // === EXPORT ===
 module.exports = router;

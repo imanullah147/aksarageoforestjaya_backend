@@ -8,7 +8,7 @@ const upload = require("../../middleware/upload");
 router.post("/", checkToken, upload.single("photo"), galeryController.createGalery);
 router.put("/:id", checkToken, upload.single("photo"), galeryController.editGalery);
 router.get("/:id", checkToken, galeryController.getGaleryById);
-router.get("/", checkToken, galeryController.getAllGalery);
+router.get("/", galeryController.getAllGalery);
 router.delete("/:id", checkToken, galeryController.deleteGalery);
 router.patch("/activate", checkToken, galeryController.aktifkanGalery);
 router.patch("/deactivate", checkToken, galeryController.nonAktifkanGalery);

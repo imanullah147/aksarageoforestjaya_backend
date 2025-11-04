@@ -1,43 +1,58 @@
-module.exports = {
-  parseCreate: (req) => {
-    const { name, description, status } = req.body;
-    return {
-      name,
-      description: description || "",
-      status: status || "active",
-    };
-  },
+class ServiceCategoryRequest {
+  static parseCreate(req) {
+    const { title, description, icon } = req.body || {};
+    if (!title) throw new Error("Field 'title' wajib diisi");
+    return { title, description, icon };
+  }
 
-  parseUpdate: (req) => {
+  static parseEdit(req) {
     const { id } = req.params;
-    const { name, description, status } = req.body;
+    const { title, description, icon } = req.body || {};
+    if (!id) throw new Error("Parameter 'id' wajib dikirim");
+    if (!title && !description && !icon)
+      throw new Error("Minimal kirim salah satu field untuk update");
+    return { id, title, description, icon };
+  }
+
+  static parseGetById(req) {
+    const { id } = req.params;
+    if (!id) throw new Error("Parameter 'id' tidak ditemukan");
+    return id;
+  }
+
+  static parseList(req) {
+    const {
+      cari = "",
+      page = 0,
+      size = 10,
+      sortField = "id",
+      sortOrder = "ASC",
+    } = req.query || {};
+
     return {
-      id,
-      name,
-      description,
-      status,
+      cari,
+      page: parseInt(page, 10),
+      size: parseInt(size, 10),
+      sortField,
+      sortOrder: sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC",
     };
-  },
+  }
 
-  parseGetById: (req) => {
-    return req.params.id;
-  },
+  static parseDelete(req) {
+    const { id } = req.params;
+    if (!id) throw new Error("Parameter 'id' wajib ada");
+    return id;
+  }
 
-  parseList: (req) => {
-    const { page = 1, limit = 10 } = req.query;
-    return {
-      page: parseInt(page),
-      limit: parseInt(limit),
-    };
-  },
-
-  parseDelete: (req) => {
-    return req.params.id;
-  },
-
-  parseBulkStatus: (req) => {
+  static parseBulkStatus(req) {
     const { ids } = req.body;
-    if (!Array.isArray(ids)) throw new Error("Parameter 'ids' harus berupa array");
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      throw new Error("Field 'ids' harus berupa array dan tidak boleh kosong");
+    }
+
     return ids;
-  },
-};
+  }
+}
+
+module.exports = ServiceCategoryRequest;
