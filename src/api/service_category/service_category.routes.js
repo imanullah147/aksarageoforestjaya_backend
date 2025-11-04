@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const serviceCategoryController = require("../modules/service_category/service_category.controller");
+const serviceCategoryController = require("./service_category.controller");
 
 // 📦 CREATE
 router.post("/", serviceCategoryController.createServiceCategory);
