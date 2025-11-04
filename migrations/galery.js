@@ -1,43 +1,37 @@
 "use strict";
+
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable("galery", {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable("galery", {
       id: {
         type: Sequelize.INTEGER,
-        field: "id",
+        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        allowNull: false,
       },
       url: {
         type: Sequelize.STRING,
-        field: "url",
         allowNull: false,
       },
       status: {
         type: Sequelize.INTEGER,
-        field: "status",
         allowNull: false,
-        defaultValue: 1, // misal 1 = aktif, 0 = nonaktif
+        defaultValue: 1,
       },
-      createdAt: {
+      created_at: {
         type: Sequelize.DATE,
-        field: "createdAt",
         allowNull: false,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
-      updatedAt: {
+      updated_at: {
         type: Sequelize.DATE,
-        field: "updatedAt",
         allowNull: false,
-        defaultValue: Sequelize.literal(
-          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-        ),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
   },
 
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable("galery");
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable("galery");
   },
 };

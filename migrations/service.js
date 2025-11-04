@@ -40,19 +40,15 @@ module.exports = {
         field: "status",
         defaultValue: "active",
       },
-      createdAt: {
+      created_at: {
         type: Sequelize.DATE,
-        field: "createdAt",
         allowNull: false,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
-      updatedAt: {
+      updated_at: {
         type: Sequelize.DATE,
-        field: "updatedAt",
         allowNull: false,
-        defaultValue: Sequelize.literal(
-          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-        ),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
   },
