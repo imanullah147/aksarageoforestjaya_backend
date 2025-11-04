@@ -1,15 +1,15 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { sequelize } = require("./models"); // koneksi Sequelize
-const routes = require("./api"); // auto-load semua route di folder api/
+const routes = require("./src/api");
+const { sequelize, connectDatabase } = require("./src/config/database");
 
 const app = express();
 
 // === Middleware ===
 app.use(
   cors({
-    origin: "*", // ubah sesuai kebutuhan misal ['http://localhost:3000']
+    origin: "*",
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -17,10 +17,10 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// === API Routes ===
+// === Routes ===
 app.use("/api", routes);
 
-// === Health check route ===
+// === Default route ===
 app.get("/", (req, res) => {
   res.json({
     status: "OK",
@@ -36,22 +36,14 @@ app.use((req, res) => {
   });
 });
 
-// === Jalankan server & koneksi DB ===
+// === Jalankan server ===
 const PORT = process.env.APP_PORT || 3000;
 
 (async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("✅ Database connected successfully");
+  await connectDatabase();
+  await sequelize.sync({ alter: false });
 
-    // Sinkronisasi model (non-destruktif)
-    await sequelize.sync({ alter: false });
-
-    app.listen(PORT, () =>
-      console.log(`🚀 Server berjalan di http://localhost:${PORT}`)
-    );
-  } catch (err) {
-    console.error("❌ Gagal terhubung ke database:", err.message);
-    process.exit(1);
-  }
+  app.listen(PORT, () => {
+    console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
+  });
 })();

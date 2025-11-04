@@ -1,26 +1,47 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-  class user extends Model {
-    static associate(models) {
+  class User extends Model {
+    // Tidak ada asosiasi
+    static associate(models) {}
+  }
 
-      user.hasOne(models.role, { sourceKey: 'role', foreignKey: { name: 'id' }, as: 'roleUser' })
+  User.init(
+    {
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true,
+        },
+      },
+      nama: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      role: {
+        type: DataTypes.INTEGER,
+        allowNull: true, // biarin tetap ada kolom role, tapi tanpa relasi ke model lain
+      },
+      status: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
+      },
+    },
+    {
+      sequelize,
+      modelName: 'User',   // Nama model (class)
+      tableName: 'users',  // Nama tabel di DB
+      timestamps: true,    // created_at & updated_at otomatis
+      underscored: true,   // gunakan snake_case
     }
-  };
-  user.init({
-    email: DataTypes.STRING,
-    nama: DataTypes.STRING,
-    password: DataTypes.STRING,
-    role: DataTypes.INTEGER,
-    status: DataTypes.INTEGER
+  );
 
-  }, {
-    sequelize,
-    modelName: 'user',
-    tableName: 'user'
-
-  });
-  return user;
+  return User;
 };

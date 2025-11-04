@@ -2,45 +2,47 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class service extends Model {
+  class Service extends Model {
     static associate(models) {
       // setiap service milik satu kategori
-      service.belongsTo(models.service_category, {
+      Service.belongsTo(models.ServiceCategory, {
         foreignKey: 'category_id',
-        as: 'category'
+        as: 'category',
       });
     }
   }
 
-  service.init(
+  Service.init(
     {
       category_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       title: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       description: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
       },
       icon: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       status: {
         type: DataTypes.ENUM('active', 'inactive'),
-        defaultValue: 'active'
-      }
+        defaultValue: 'active',
+      },
     },
     {
       sequelize,
-      modelName: 'service',
-      tableName: 'services'
+      modelName: 'Service',
+      tableName: 'services',
+      timestamps: true,
+      underscored: true,
     }
   );
 
-  return service;
+  return Service;
 };

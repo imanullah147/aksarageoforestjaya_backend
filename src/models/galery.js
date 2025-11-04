@@ -1,23 +1,30 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
-  class galery extends Model {
-    static associate(models) {
+  class Galery extends Model {
+    static associate(models) {}
+  }
 
-      galery.hasOne(models.role, { sourceKey: 'role', foreignKey: { name: 'id' }, as: 'roleUser' })
+  Galery.init(
+    {
+      url: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Galery",
+      tableName: "galery",
+      timestamps: true, // aktifkan jika ingin ada createdAt & updatedAt
+      underscored: true, // kolom jadi snake_case (optional)
     }
-  };
-  galery.init({
-    url: DataTypes.STRING,
-    status: DataTypes.INTEGER
+  );
 
-  }, {
-    sequelize,
-    modelName: 'galery',
-    tableName: 'galery'
-
-  });
-  return galery;
+  return Galery;
 };

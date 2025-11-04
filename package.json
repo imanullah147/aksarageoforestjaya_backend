@@ -6,7 +6,10 @@
   "type": "commonjs",
   "scripts": {
     "start": "NODE_ENV=production node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "db:migrate": "npx sequelize-cli db:migrate --config src/config/config.js --env development",
+    "db:seed": "npx sequelize-cli db:seed:all --config src/config/config.js",
+    "db:rollback": "npx sequelize-cli db:migrate:undo --config src/config/config.js"
   },
   "keywords": [
     "express",
@@ -33,6 +36,7 @@
     "sequelize": "^6.37.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "sequelize-cli": "^6.6.2"
   }
 }
