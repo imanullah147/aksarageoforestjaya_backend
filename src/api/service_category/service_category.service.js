@@ -1,14 +1,51 @@
 const model = require("../../models");
-
+const cloudinary = require("../../config/cloundinary");
+const streamifier = require("streamifier");
 class ServiceCategoryService {
   async createCategory(data) {
-    const category = await model.ServiceCategory.create(data);
-    return {
-      success: true,
-      code: 201,
-      message: "Kategori layanan berhasil ditambahkan",
-      data: category,
-    };
+    try {
+      let iconUrl = null;
+
+      // Upload icon ke Cloudinary kalau ada file
+      if (data.file) {
+        const uploadResult = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "service-category",
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          streamifier.createReadStream(data.file.buffer).pipe(stream);
+        });
+
+        iconUrl = uploadResult.secure_url;
+      }
+
+      const category = await model.ServiceCategory.create({
+        title: data.title,
+        description: data.description,
+        icon: iconUrl,
+      });
+
+      return {
+        success: true,
+        code: 201,
+        message: "Kategori layanan berhasil ditambahkan",
+        data: category,
+      };
+    } catch (error) {
+      console.error("Error createCategory:", error);
+      return {
+        success: false,
+        code: 500,
+        message: "Gagal menambahkan kategori layanan",
+        error: error.message,
+      };
+    }
   }
 
   async editCategory(id, data) {
@@ -42,23 +79,42 @@ class ServiceCategoryService {
     sortField = "id",
     sortOrder = "ASC",
   }) {
-    const categories = await model.ServiceCategory.findAndCountAll({
-      where: {
-        title: { [model.Sequelize.Op.iLike]: `%${cari}%` },
-      },
-      offset: parseInt(page),
-      limit: parseInt(size),
-      order: [[sortField, sortOrder]],
-    });
+    try {
+      const categories = await model.ServiceCategory.findAndCountAll({
+        where: {
+          title: { [model.Sequelize.Op.iLike]: `%${cari}%` },
+        },
+        include: [
+          {
+            model: model.Service,
+            as: "services",
+            attributes: ["id", "title", "description", "status"], // pilih field yang ingin ditampilkan
+            where: { status: "active" }, // opsional: hanya tampilkan service aktif
+            required: false, // agar kategori tanpa service tetap muncul
+          },
+        ],
+        offset: parseInt(page),
+        limit: parseInt(size),
+        order: [[sortField, sortOrder]],
+      });
 
-    return {
-      success: true,
-      code: 200,
-      totalData: categories.count,
-      limit: size,
-      page,
-      data: categories.rows,
-    };
+      return {
+        success: true,
+        code: 200,
+        totalData: categories.count,
+        limit: size,
+        page,
+        data: categories.rows,
+      };
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      return {
+        success: false,
+        code: 500,
+        message: "Gagal memuat data kategori",
+        error: error.message,
+      };
+    }
   }
 
   async deleteCategory(id) {

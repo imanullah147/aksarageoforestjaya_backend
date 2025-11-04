@@ -1,8 +1,15 @@
 class ServiceCategoryRequest {
   static parseCreate(req) {
-    const { title, description, icon } = req.body || {};
+    const { title, description } = req.body || {};
+    const file = req.file;
+
     if (!title) throw new Error("Field 'title' wajib diisi");
-    return { title, description, icon };
+
+    return {
+      title,
+      description,
+      file, // kirim file buffer ke service
+    };
   }
 
   static parseEdit(req) {

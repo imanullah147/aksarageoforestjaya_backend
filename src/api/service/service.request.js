@@ -1,7 +1,7 @@
 class ServiceRequest {
   // === CREATE ===
   static parseCreate(req) {
-    const { category_id, title, description, icon, status } = req.body || {};
+    const { category_id, title, description, status } = req.body || {};
 
     if (!category_id) throw new Error("Field 'category_id' wajib diisi");
     if (!title) throw new Error("Field 'title' wajib diisi");
@@ -10,7 +10,6 @@ class ServiceRequest {
       category_id: parseInt(category_id, 10),
       title: title.trim(),
       description: description?.trim() || null,
-      icon: icon?.trim() || null,
       status: status?.toLowerCase() || "active",
     };
   }
@@ -18,7 +17,7 @@ class ServiceRequest {
   // === UPDATE ===
   static parseUpdate(req) {
     const { id } = req.params;
-    const { category_id, title, description, icon, status } = req.body || {};
+    const { category_id, title, description, status } = req.body || {};
 
     if (!id) throw new Error("Parameter 'id' wajib dikirim");
 
@@ -27,7 +26,6 @@ class ServiceRequest {
       category_id: category_id ? parseInt(category_id, 10) : undefined,
       title: title?.trim(),
       description: description?.trim(),
-      icon: icon?.trim(),
       status: status?.toLowerCase(),
     };
   }

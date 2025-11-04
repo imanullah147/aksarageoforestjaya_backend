@@ -7,7 +7,6 @@ class ServiceService {
       category_id: data.category_id,
       title: data.title,
       description: data.description,
-      icon: data.icon,
       status: data.status || 'active',
     });
 

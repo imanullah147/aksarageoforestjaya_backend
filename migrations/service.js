@@ -30,11 +30,6 @@ module.exports = {
         field: "description",
         allowNull: true,
       },
-      icon: {
-        type: Sequelize.STRING,
-        field: "icon",
-        allowNull: true,
-      },
       status: {
         type: Sequelize.ENUM("active", "inactive"),
         field: "status",
