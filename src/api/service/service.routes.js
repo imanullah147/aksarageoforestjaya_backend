@@ -6,8 +6,7 @@ const { checkToken } = require("../../middleware/token_validation");
 // === SERVICE ROUTES ===
 router.post("/", checkToken, serviceController.createService);
 router.put("/:id", checkToken, serviceController.updateService);
-router.get("/:id", checkToken, serviceController.getServiceById);
-router.post("/", checkToken, serviceController.getAllServices);
+router.get("/", checkToken, serviceController.getAllServices);
 router.delete("/:id", checkToken, serviceController.deleteService);
 router.patch("/activate", checkToken, serviceController.activateMany);
 router.patch("/deactivate", checkToken, serviceController.deactivateMany);
